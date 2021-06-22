@@ -1,76 +1,77 @@
-import React, {useState} from 'react';
-import './App.css';
-// importing components up here
+/* eslint-disable react/jsx-no-undef */
+import React from 'react';
 import Form from './components/Form';
-import TodoList from './components/TodoList';
-// for the date and time here
-import DateFnsUtils from '@date-io/date-fns'
-import{
-  MuiPickersUtilsProvider,
-  KeyboardTimePicker,
-  KeyboarddatePicker
-}from '@material-ui/pickers'
+import Todo from './components/Todo';
+// import DateFnsUtils from '@date-io/date-fns';
+import Immutable from 'immutable';
+// import{
+//   MuiPickersUtilsProvider,
+//   KeyboardTimePicker,
+//   KeyboardDatePicker
+// }from '@material-ui/pickers'
 
-function App() {
-  // Input is the state & SetInput is the function that allows you to change that value
-  const [inputText, setInputText] = useState("");
-  const [todos, setTodos] = useState([]);
-  
-  const[selectedDate, serSelectedDate] = React.useState(
-  new Date("2021-06-18f12:00:00")
-)
+class App extends React.Component{
+  constructor(props){
+    super(props);
+    this.state = {
+      id: 0,
+      title: '',
+      todos: new Immutable.Map(),
+      selectedDate: ''}
+  }
 
-  const handleDateChange = (date) =>{
-     setSelectedDate(date)
-}
-  // Input is the state & SetInput is the function that allows you to change that value
-  const [inputText, setInputText] = useState("");
-  const [todos, setTodos] = useState([]);
-  return (
-    <div className="App">
-    <MuiPickersUtilsProvider utils={DateFnsUtils}>
-    <Grid container justify='space-around'>
-    <KeyboarddatePicker
-    disableToolbar
-    variant='inline'
-    format='MM/dd/yyyy'
-    margin='normal'
-    id='date-picker'
-    label='Date Picker'
-    value={selectedDate}
-    onChange={handleDateChange}
-    KeyboardButtonProps={{
-      'aria-label': 'cahnge-date'
-    }}
-    />
-    <KeyboardTimePicker
-    margin='normal'
-    id='time-picker'
-    label='Time Picker'
-    value={selectedDate}
-    onChange={handleDateChange}
-    KeyboardButtonProps={{
-      'aria-label': 'cahnge-date'
-    }}
-    />
+  handleDateChange = (date) => {
+    this.setState({selectedDate: date})
+  }
 
-    </Grid>
-    </MuiPickersUtilsProvider>
-  return (
-    <div className="App">
-      <header>
-      <h1>51's To-Do list</h1>
-      </header>
-      {/* Using Form below almost like an HTML element 
-      adding setInputText from above gives us access to it in the Form component*/}
-      <Form inputText={inputText} todos={todos} setTodos={setTodos} setInputText={setInputText} />
-      {/* Using Todo below almost like an HTML element */}
-      <TodoList setTodos={setTodos} todos={todos} />
-    </div>
-  );
+  handleAdd = (name) => {
+    console.log('powwow');
+    let today = new Date();
+    const todo = {
+      title: name,
+      selectedDate: new Date(today.getFullYear(), today.getMonth() + 1, today.getDate(), today.getHours(), today.getMinutes(), today.getSeconds()),
+    };
+
+    this.setState((prevState) => ({
+      todos: prevState.todos.set(prevState.id, todo),
+      id: prevState.id + 1,
+    }));
+
+    console.log(this.state.todos);
+
+  }
+
+  // renderComponents = () => {
+  //   return (
+  //     <div className="main">
+  //       <MuiPickersUtilsProvider utils={DateFnsUtils}>
+  //       <KeyboardDatePicker disableToolbar variant='inline' format='MM/dd/yyyy' margin='normal' id='date-picker' label='Date Picker' value={this.state.selectedDate} onChange={this.handleDateChange}
+  //       KeyboardButtonProps={{'aria-label': 'cahnge-date'}}/>
+  //       <KeyboardTimePicker margin='normal' id='time-picker' label='Time Picker' value={this.state.selectedDate} onChange={this.handleDateChange}
+  //       KeyboardButtonProps={{'aria-label': 'cahnge-date'}}/>
+  //       </MuiPickersUtilsProvider>
+  //     </div>
+  //   )
+  // };
+
+  render() {
+    const myTodos = this.state.todos.entrySeq().map(([id, todo]) => {
+      return <Todo id={id} todo={todo} />;
+    });
+    return (
+      <div id="App">
+        <div id="header_area">
+          <h1>Lab 1: Team 51</h1>
+        </div>
+        <div id="formContainer">
+          <Form handleAdd={this.handleAdd}/>
+        </div>
+        <div id="todoContainer">
+          {myTodos}
+        </div>
+      </div>
+    );
+  }
 }
 
 export default App;
-
-
-// Will hook up components to main App.js

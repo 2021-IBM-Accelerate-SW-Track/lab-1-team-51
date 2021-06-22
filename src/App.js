@@ -1,56 +1,74 @@
 /* eslint-disable react/jsx-no-undef */
 import React from 'react';
-import './App.css';
-// importing components up here
 import Form from './components/Form';
-import TodoList from './components/TodoList';
-// for the date and time here
-import DateFnsUtils from '@date-io/date-fns'
-import{
-  MuiPickersUtilsProvider,
-  KeyboardTimePicker,
-  KeyboardDatePicker
-}from '@material-ui/pickers'
+import Todo from './components/Todo';
+// import DateFnsUtils from '@date-io/date-fns';
+import Immutable from 'immutable';
+// import{
+//   MuiPickersUtilsProvider,
+//   KeyboardTimePicker,
+//   KeyboardDatePicker
+// }from '@material-ui/pickers'
 
 class App extends React.Component{
   constructor(props){
     super(props);
     this.state = {
-      inputText: '',
-      todos: [],
-      selectedDate: new Date("2021-06-18f12:00:00")}
+      id: 0,
+      title: '',
+      todos: new Immutable.Map(),
+      selectedDate: ''}
   }
 
   handleDateChange = (date) => {
     this.setState({selectedDate: date})
   }
 
-  renderComponents = () => {
-    return (
-      <div className="main">
-        <MuiPickersUtilsProvider utils={DateFnsUtils}>
-        <Grid container justify='space-around'>
-        <KeyboardDatePicker disableToolbar variant='inline' format='MM/dd/yyyy' margin='normal' id='date-picker' label='Date Picker' value={this.state.selectedDate} onChange={this.handleDateChange}
-        KeyboardButtonProps={{'aria-label': 'cahnge-date'}}/>
-        <KeyboardTimePicker margin='normal' id='time-picker' label='Time Picker' value={this.state.selectedDate} onChange={this.handleDateChange}
-        KeyboardButtonProps={{'aria-label': 'cahnge-date'}}/>
-        </Grid>
-        </MuiPickersUtilsProvider>
-      </div>
-    )
-  };
+  handleAdd = (name) => {
+    console.log('powwow');
+    let today = new Date();
+    const todo = {
+      title: name,
+      selectedDate: new Date(today.getFullYear(), today.getMonth() + 1, today.getDate(), today.getHours(), today.getMinutes(), today.getSeconds()),
+    };
+
+    this.setState((prevState) => ({
+      todos: prevState.todos.set(prevState.id, todo),
+      id: prevState.id + 1,
+    }));
+
+    console.log(this.state.todos);
+
+  }
+
+  // renderComponents = () => {
+  //   return (
+  //     <div className="main">
+  //       <MuiPickersUtilsProvider utils={DateFnsUtils}>
+  //       <KeyboardDatePicker disableToolbar variant='inline' format='MM/dd/yyyy' margin='normal' id='date-picker' label='Date Picker' value={this.state.selectedDate} onChange={this.handleDateChange}
+  //       KeyboardButtonProps={{'aria-label': 'cahnge-date'}}/>
+  //       <KeyboardTimePicker margin='normal' id='time-picker' label='Time Picker' value={this.state.selectedDate} onChange={this.handleDateChange}
+  //       KeyboardButtonProps={{'aria-label': 'cahnge-date'}}/>
+  //       </MuiPickersUtilsProvider>
+  //     </div>
+  //   )
+  // };
 
   render() {
+    const myTodos = this.state.todos.entrySeq().map(([id, todo]) => {
+      return <Todo id={id} todo={todo} />;
+    });
     return (
-      <div className="App">
-        <header>
-        <h1>51's To-Do list</h1>
-        </header>
-        {/* Using Form below almost like an HTML element 
-        adding setInputText from above gives us access to it in the Form component*/}
-        <Form inputText={this.state.inputText} todos={this.state.todos} />
-        {/* Using Todo below almost like an HTML element */}
-        <TodoList todos={this.state.todos} />
+      <div id="App">
+        <div id="header_area">
+          <h1>Lab 1: Team 51</h1>
+        </div>
+        <div id="formContainer">
+          <Form handleAdd={this.handleAdd}/>
+        </div>
+        <div id="todoContainer">
+          {myTodos}
+        </div>
       </div>
     );
   }
